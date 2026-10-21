@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tool tưng tửng · Bản quyền @SunNetWin</title>
+<script>window.VIP_CONFIG = Object.freeze({ API_BASE: 'https://toolfake-production.up.railway.app', BRAND: '@SunNetWin' });</script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{fontFamily:{sans:['Space Grotesk','sans-serif'],mono:['JetBrains Mono','monospace']}}}}</script>
+<style>
+  :root{--accent:#f59e0b;--sky:#0ea5e9;--rose:#e11d48;--ink:#0f172a;--emerald:#10b981}
+  body{background:#eef2ff;color:var(--ink);font-family:'Space Grotesk',sans-serif;overflow-x:hidden}
+  .mesh-bg{position:fixed;inset:0;z-index:-2;background:
+    radial-gradient(700px 500px at 8% 12%,rgba(245,158,11,.22),transparent 55%),
+    radial-gradient(600px 480px at 92% 8%,rgba(14,165,233,.18),transparent 55%),
+    radial-gradient(800px 560px at 50% 100%,rgba(225,29,72,.12),transparent 55%),
+    radial-gradient(400px 300px at 70% 40%,rgba(16,185,129,.1),transparent 50%),
+    linear-gradient(160deg,#f8fafc 0%,#eef2ff 40%,#fdf4ff 100%);
+    animation:meshShift 20s ease-in-out infinite alternate}
+  @keyframes meshShift{0%{filter:hue-rotate(0) saturate(1)}100%{filter:hue-rotate(20deg) saturate(1.15)}}
+  .grid-overlay{position:fixed;inset:0;z-index:-1;background-image:linear-gradient(rgba(15,23,42,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(15,23,42,.04) 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(ellipse at center,black 25%,transparent 75%)}
+  .sharp-card{background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border:2.5px solid var(--ink);box-shadow:6px 6px 0 var(--ink);transition:transform .18s cubic-bezier(.34,1.2,.64,1),box-shadow .18s;border-radius:2px}
+  .sharp-card:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--ink)}
+  .sharp-btn{border:2.5px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-weight:800;transition:all .12s;border-radius:2px;letter-spacing:.04em}
+  .sharp-btn:hover:not(:disabled){transform:translate(-1.5px,-1.5px);box-shadow:5px 5px 0 var(--ink)}
+  .sharp-btn:active:not(:disabled){transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+  .sharp-btn:disabled{opacity:.55;cursor:not-allowed}
+  .progress-inner{transition:width .65s cubic-bezier(.4,0,.2,1)}
+  @keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(1200%)}}
+  .scanline{animation:scanline 1.4s infinite linear}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+  .shake{animation:shake .45s ease}
+  @keyframes popIn{0%{transform:scale(.88) translateY(8px);opacity:0}60%{transform:scale(1.03)}100%{transform:scale(1);opacity:1}}
+  .pop-in{animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both}
+  @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .float-y{animation:floatY 4.5s ease-in-out infinite}
+  @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 2px var(--ink),0 0 18px rgba(245,158,11,.35)}50%{box-shadow:0 0 0 2px var(--ink),0 0 42px rgba(245,158,11,.7)}}
+  .pulse-glow{animation:pulseGlow 2.2s ease-in-out infinite}
+  .gradient-text{background:linear-gradient(105deg,#f59e0b 0%,#e11d48 40%,#0ea5e9 70%,#10b981 100%);background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gradShift 5s linear infinite}
+  @keyframes gradShift{to{background-position:220% center}}
+  .tab-active{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:var(--ink);box-shadow:3px 3px 0 var(--ink)}
+  .tab-inactive{background:#fff;color:#64748b}
+  .tab-inactive:hover{background:#fef3c7;color:var(--ink)}
+  .game-tabs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.75rem}
+  input:focus{outline:none;box-shadow:0 0 0 3px rgba(245,158,11,.4)}
+  .hist-row{border-bottom:1px dashed rgba(15,23,42,.12)}
+  .spinner{width:18px;height:18px;border:3px solid rgba(15,23,42,.15);border-top-color:var(--ink);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #toast{position:fixed;top:18px;left:50%;z-index:9999;transform:translate(-50%,-140%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);min-width:280px;max-width:92vw}
+  #toast.show{transform:translate(-50%,0)}
+  .login-loading{position:fixed;inset:0;z-index:50;background:rgba(15,23,42,.94);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
+  #celebrateOverlay{position:fixed;inset:0;z-index:200;pointer-events:none;display:none;align-items:center;justify-content:center;background:rgba(16,185,129,.2)}
+  #celebrateOverlay.show{display:flex}
+  .celeb-box{background:linear-gradient(135deg,#10b981,#059669);border:3px solid #0f172a;box-shadow:8px 8px 0 #0f172a;padding:1.35rem 1.9rem;text-align:center;animation:popIn .45s cubic-bezier(.34,1.56,.64,1)}
+  .acc-correct{background:#d1fae5!important;color:#065f46!important;border-left:4px solid #10b981}
+  .acc-wrong{background:#fee2e2!important;color:#9f1239!important;border-left:4px solid #e11d48}
+  .stat-tile{background:linear-gradient(160deg,#fff 0%,#f8fafc 100%);border:2.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
+  .pred-hero{background:linear-gradient(145deg,#fff 0%,#fffbeb 50%,#f0f9ff 100%)}
+  .badge-live{box-shadow:0 0 0 2px #0f172a,0 0 12px rgba(16,185,129,.5)}
+  ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#0f172a;border-radius:4px}::-webkit-scrollbar-track{background:#e2e8f0}
+
+  .wm-wrap{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .wm-line{position:absolute;white-space:nowrap;font-weight:900;font-size:clamp(18px,4vw,32px);color:rgba(15,23,42,.06);letter-spacing:.12em;text-transform:uppercase;transform:rotate(-28deg);user-select:none}
+  #loginView,#dashView{position:relative;z-index:1}
+  #floatSupport{position:fixed;right:16px;bottom:20px;z-index:90;width:56px;height:56px;border-radius:50%;background:#0ea5e9;border:3px solid #0f172a;box-shadow:4px 4px 0 #0f172a;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:grab;touch-action:none;user-select:none;text-decoration:none;color:#fff}
+  #floatSupport:active{cursor:grabbing}
+  #floatSupport .tip{position:absolute;right:64px;bottom:8px;background:#0f172a;color:#fbbf24;font-size:10px;font-weight:800;padding:6px 10px;border:2px solid #0f172a;box-shadow:2px 2px 0 #f59e0b;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s}
+  #floatSupport:hover .tip{opacity:1}
+  .info-bar{font-size:11px;line-height:1.6}
+
+
+  .title-tx{
+    font-size:clamp(2.4rem,10vw,3.6rem);
+    font-weight:900;
+    line-height:1.05;
+    letter-spacing:-.03em;
+    background:linear-gradient(105deg,#0f172a 0%,#f59e0b 35%,#e11d48 55%,#0ea5e9 75%,#0f172a 100%);
+    background-size:220% auto;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:gradShift 4s linear infinite, titlePulse 2.8s ease-in-out infinite;
+    text-align:center;
+  }
+  @keyframes titlePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+  .title-sub{font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:#64748b;font-weight:700;margin-top:.4rem}
+  .dev-chip{font-family:'JetBrains Mono',monospace;font-size:10px;word-break:break-all}
+
+
+  /* === VIP motion layer === */
+  .orb{position:fixed;border-radius:50%;filter:blur(60px);opacity:.45;pointer-events:none;z-index:0;animation:orbFloat 12s ease-in-out infinite}
+  .orb-a{width:280px;height:280px;background:#f59e0b;top:-60px;left:-40px;animation-delay:0s}
+  .orb-b{width:320px;height:320px;background:#0ea5e9;bottom:10%;right:-80px;animation-delay:-4s}
+  .orb-c{width:220px;height:220px;background:#e11d48;top:40%;left:30%;opacity:.25;animation-delay:-7s}
+  @keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-25px) scale(1.12)}}
+
+  .shimmer{position:relative;overflow:hidden}
+  .shimmer::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.45) 50%,transparent 60%);transform:translateX(-120%);animation:shimmerMove 2.8s ease-in-out infinite}
+  @keyframes shimmerMove{0%{transform:translateX(-120%)}60%,100%{transform:translateX(120%)}}
+
+  .pred-hero-num{font-size:clamp(2.8rem,12vw,4.2rem);font-weight:900;letter-spacing:-.04em;line-height:1;animation:predBounce .6s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes predBounce{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+
+  .bar-glow{box-shadow:0 0 12px rgba(14,165,233,.35)}
+  .card-live{animation:cardBreath 3.5s ease-in-out infinite}
+  @keyframes cardBreath{0%,100%{box-shadow:6px 6px 0 #0f172a}50%{box-shadow:6px 6px 0 #0f172a,0 0 24px rgba(245,158,11,.25)}}
+
+  .tab-active{transform:translate(-2px,-2px)!important;box-shadow:5px 5px 0 #0f172a!important;background:linear-gradient(135deg,#fef3c7,#fde68a)!important}
+  .game-tab{transition:all .2s cubic-bezier(.34,1.2,.64,1);position:relative}
+  .game-tab:active{transform:scale(.96)}
+
+  .login-card{animation:popIn .55s cubic-bezier(.34,1.56,.64,1) both;position:relative}
+  .login-card::before{content:'';position:absolute;inset:-2px;border-radius:4px;background:linear-gradient(120deg,#f59e0b,#e11d48,#0ea5e9,#10b981);z-index:-1;opacity:.85;animation:gradShift 4s linear infinite;background-size:220% auto}
+
+  .pulse-ring{position:relative}
+  .pulse-ring::after{content:'';position:absolute;inset:-6px;border:2px solid #10b981;border-radius:999px;animation:ringOut 1.6s ease-out infinite;opacity:0}
+  @keyframes ringOut{0%{transform:scale(.85);opacity:.7}100%{transform:scale(1.35);opacity:0}}
+
+  .stat-pop{animation:statPop .45s cubic-bezier(.34,1.4,.64,1) both}
+  @keyframes statPop{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+
+  .hist-ok{background:linear-gradient(90deg,#d1fae5,#a7f3d0)!important;border-color:#059669!important}
+  .hist-bad{background:linear-gradient(90deg,#fee2e2,#fecaca)!important}
+
+  #clockNow{animation:tickGlow 1s step-end infinite}
+  @keyframes tickGlow{50%{background:#fef3c7}}
+
+  .mesh-bg{background:
+    radial-gradient(ellipse 80% 60% at 10% 20%,rgba(245,158,11,.28),transparent),
+    radial-gradient(ellipse 70% 50% at 90% 10%,rgba(14,165,233,.22),transparent),
+    radial-gradient(ellipse 60% 40% at 50% 90%,rgba(225,29,72,.15),transparent),
+    linear-gradient(165deg,#fff7ed 0%,#f0f9ff 45%,#fdf2f8 100%)!important;
+    animation:meshShift 18s ease-in-out infinite alternate}
+  @keyframes meshShift{from{filter:hue-rotate(0deg)}to{filter:hue-rotate(12deg)}}
+
+
+  /* Premium polish v2 */
+  body{letter-spacing:.01em}
+  .sharp-btn{transition:transform .15s,box-shadow .15s,filter .15s}
+  .sharp-btn:hover{filter:brightness(1.05)}
+  .sharp-btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)!important}
+  .login-wrap{max-width:380px}
+  .glass-head{background:rgba(255,255,255,.82);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px)}
+  .pred-glow-tai{text-shadow:0 0 28px rgba(29,78,216,.35)}
+  .pred-glow-xiu{text-shadow:0 0 28px rgba(225,29,72,.35)}
+  .fade-up{animation:fadeUp .45s cubic-bezier(.22,1,.36,1) both}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .stagger > *:nth-child(1){animation-delay:.05s}
+  .stagger > *:nth-child(2){animation-delay:.1s}
+  .stagger > *:nth-child(3){animation-delay:.15s}
+  .stagger > *:nth-child(4){animation-delay:.2s}
+  .icon-btn{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px}
+  #floatSupport{background:linear-gradient(145deg,#0ea5e9,#0284c7);transition:transform .2s}
+  #floatSupport:hover{transform:scale(1.08)}
+  .conf-pill{border-radius:999px!important;letter-spacing:.06em}
+  .dev-bar{background:rgba(255,255,255,.75);backdrop-filter:blur(8px)}
+
+
+  /* === Loading & motion pro === */
+  .boot-screen{position:fixed;inset:0;z-index:200;background:#0b1220;display:flex;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s}
+  .boot-screen.hide{opacity:0;visibility:hidden;pointer-events:none}
+  .boot-ring{width:72px;height:72px;border-radius:50%;border:3px solid rgba(255,255,255,.12);border-top-color:#f59e0b;border-right-color:#0ea5e9;animation:spin 1s linear infinite;position:relative}
+  .boot-ring::after{content:'';position:absolute;inset:10px;border-radius:50%;border:2px solid transparent;border-bottom-color:#e11d48;animation:spin 1.4s linear infinite reverse}
+  .boot-logo{position:absolute;font-size:11px;font-weight:900;letter-spacing:.2em;color:#fbbf24}
+
+  .login-loading{background:radial-gradient(ellipse at center,#1e293b 0%,#0b1220 70%)!important}
+  .load-orbit{width:88px;height:88px;margin:0 auto 16px;position:relative}
+  .load-orbit span{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;animation:spin 1.2s linear infinite}
+  .load-orbit span:nth-child(1){border-top-color:#f59e0b}
+  .load-orbit span:nth-child(2){inset:8px;border-right-color:#0ea5e9;animation-duration:1.6s;animation-direction:reverse}
+  .load-orbit span:nth-child(3){inset:16px;border-bottom-color:#10b981;animation-duration:2s}
+  .load-dots::after{content:'';animation:dots 1.4s steps(4,end) infinite}
+  @keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}}
+
+  .progress-lux{height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden;border:1px solid rgba(255,255,255,.15);position:relative}
+  .progress-lux > i{display:block;height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,#f59e0b,#e11d48,#0ea5e9,#10b981);background-size:200% 100%;animation:gradShift 1.5s linear infinite;box-shadow:0 0 16px rgba(245,158,11,.5);transition:width .12s linear}
+
+  .calc-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(14,165,233,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(14,165,233,.06) 1px,transparent 1px);background-size:24px 24px;animation:gridScroll 8s linear infinite;opacity:.5;pointer-events:none}
+  @keyframes gridScroll{to{background-position:24px 24px}}
+
+  .scanline{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#38bdf8,transparent);animation:scanY 2s ease-in-out infinite;opacity:.7;pointer-events:none}
+  @keyframes scanY{0%{top:10%}50%{top:90%}100%{top:10%}}
+
+  .ripple{position:relative;overflow:hidden}
+  .ripple-wave{position:absolute;border-radius:50%;transform:scale(0);background:rgba(255,255,255,.35);animation:rippleOut .6s ease-out;pointer-events:none}
+  @keyframes rippleOut{to{transform:scale(4);opacity:0}}
+
+  .skeleton{background:linear-gradient(90deg,#e2e8f0 25%,#f8fafc 50%,#e2e8f0 75%);background-size:200% 100%;animation:sk 1.2s ease-in-out infinite;border-radius:4px}
+  @keyframes sk{to{background-position:-200% 0}}
+
+  .count-up{font-variant-numeric:tabular-nums}
+  .btn-loading{pointer-events:none;opacity:.85}
+  .btn-loading .spinner{margin-right:8px;vertical-align:middle}
+
+  .dash-enter{animation:dashIn .55s cubic-bezier(.22,1,.36,1) both}
+  @keyframes dashIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+
+  .pred-flash{animation:predFlash .5s ease}
+  @keyframes predFlash{0%{filter:brightness(1.4)}100%{filter:brightness(1)}}
+
+  .bar-fill{transition:width .7s cubic-bezier(.22,1,.36,1)!important}
+
+</style>
+</head>
+<body class="min-h-screen font-sans">
+<div id="bootScreen" class="boot-screen">
+  <div class="relative flex items-center justify-center">
+    <div class="boot-ring"></div>
+    <div class="boot-logo">VIP</div>
+  </div>
+</div>
+<div class="mesh-bg"></div>
+<div class="grid-overlay"></div>
+
+<!-- Toast -->
+<div id="toast" class="sharp-card px-5 py-4 bg-emerald-400 border-2 border-slate-900 shadow-[6px_6px_0_#0f172a]">
+  <div class="font-black text-base uppercase tracking-wide" id="toastTitle">✅ Đăng nhập thành công</div>
+  <div class="text-xs font-mono mt-1.5 font-semibold" id="toastMsg">Key hợp lệ · Chọn game để xem dự đoán</div>
+</div>
+
+<!-- Celebrate correct prediction -->
+<div id="celebrateOverlay">
+  <div class="celeb-box">
+    <div class="text-4xl mb-1">👏🎉</div>
+    <div class="font-black text-xl text-white uppercase tracking-wide">Dự đoán đúng!</div>
+    <div class="font-mono text-xs text-emerald-100 mt-1" id="celebDetail">Engine hit</div>
+  </div>
+</div>
+
+<!-- Login loading overlay -->
+<div id="loginLoading" class="login-loading hidden">
+  <div class="w-full max-w-xs p-6 text-center relative">
+    <div class="load-orbit"><span></span><span></span><span></span></div>
+    <div class="text-amber-400 font-black text-sm tracking-[0.25em] uppercase">Tool tưng tửng</div>
+    <div class="text-sky-300 font-mono text-xs mt-2 load-dots">Xác thực key</div>
+    <div class="progress-lux mt-5"><i id="loginBar" style="width:0%"></i></div>
+    <div class="mt-2 flex justify-between font-mono text-[10px] text-slate-400">
+      <span id="loginPct">0%</span>
+      <span id="loginClock">--</span>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginView" class="min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-sm pop-in login-wrap">
+    <div class="text-center mb-5">
+      <div class="inline-block sharp-card px-3 py-1 mb-3 text-xs font-bold bg-amber-400 shimmer">⚡ Tool tưng tửng VIP</div>
+      <h1 class="title-tx">DỰ ĐOÁN TX</h1>
+      <p class="title-sub">@SunNetWin</p>
+      <p class="text-slate-400 text-xs mt-1" id="loginNow">--</p>
+    </div>
+
+    <!-- Ô nhỏ phía trên -->
+    <div class="flex justify-center gap-2 mb-4">
+      <a id="telegramCta" href="#" target="_blank" rel="noreferrer" title="Mua / nhận key"
+         class="sharp-btn icon-btn bg-slate-900 text-amber-300 text-lg"
+         onclick="if(this.getAttribute('href')==='#'){alert('Admin chưa cấu hình username bot Telegram.');return false;}">🔑</a>
+      <a href="https://t.me/SunNetWin" target="_blank" rel="noreferrer" title="Hỗ trợ"
+         class="sharp-btn icon-btn bg-sky-500 text-white text-lg">💬</a>
+      <button type="button" onclick="openTips()" title="Mẹo"
+         class="sharp-btn icon-btn bg-amber-300 text-lg">💡</button>
+      <button type="button" onclick="openNote()" title="Lưu ý"
+         class="sharp-btn icon-btn bg-rose-500 text-white text-lg">⚠️</button>
+    </div>
+
+    <div class="sharp-card p-5 login-card shimmer">
+      <label class="block text-xs font-semibold text-slate-600 mb-1.5">Mã key</label>
+      <input id="keyInput" type="password" placeholder="Nhập key..." class="w-full p-3 border-2 border-slate-900 font-mono text-sm bg-white mb-3" autocomplete="off">
+      <button id="loginBtn" onclick="doLogin()" class="sharp-btn w-full py-2.5 bg-amber-400 text-slate-900 font-bold text-sm ripple">
+        <span id="loginBtnText">Đăng nhập</span>
+      </button>
+      <div id="loginError" class="hidden text-center text-rose-600 text-xs font-semibold mt-2 py-1.5 bg-rose-50 border border-rose-300"></div>
+    </div>
+    <div class="sharp-card p-3 mt-3 info-bar text-slate-700 space-y-1">
+      <div>💻 <b id="devName">--</b></div>
+      <div class="dev-chip">🌐 IP mạng: <b id="devIp">--</b></div>
+      <div class="dev-chip">📱 IP thiết bị: <b id="devLocalIp">--</b></div>
+      <div class="dev-chip">🆔 Device: <b id="devIdShort">--</b></div>
+      <div>🔑 <span id="devKeyState">Chưa nhập</span> · 📱 <span id="devSlot">0/3</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Tips modal -->
+<div id="tipsModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" onclick="if(event.target===this)closeTips()">
+  <div class="sharp-card w-full max-w-md bg-white p-5 relative pop-in">
+    <button type="button" onclick="closeTips()" class="absolute top-3 right-3 sharp-btn w-8 h-8 bg-rose-500 text-white text-sm font-black">✕</button>
+    <div class="inline-block px-3 py-1 bg-amber-300 border-2 border-slate-900 font-mono font-black text-xs mb-3">💡 MẸO HAY</div>
+    <h3 class="text-xl font-black uppercase mb-1">Mẹo sử dụng tool</h3>
+    <p class="text-xs text-slate-500 font-mono mb-4">Giúp bạn dùng engine hiệu quả hơn</p>
+    <div class="space-y-3">
+      <div class="border-2 border-slate-900 p-3">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 shrink-0 bg-sky-400 border-2 border-slate-900 flex items-center justify-center text-lg">🔑</div>
+          <div>
+            <div class="font-black text-sm uppercase">Key bị giới hạn thiết bị</div>
+            <div class="text-xs text-slate-600 mt-1">Vào Telegram bot → gõ <code class="bg-amber-100 px-1 font-bold">/resetkey</code> → gửi mã key. Reset <b>tự động</b>, thời hạn key <b>không đổi</b>.</div>
+          </div>
+        </div>
+      </div>
+      <div class="border-2 border-slate-900 p-3">
+        <div class="flex items-start gap-3">
+          <div class="w-10 h-10 shrink-0 bg-pink-300 border-2 border-slate-900 flex items-center justify-center text-lg">🧠</div>
+          <div>
+            <div class="font-black text-sm uppercase">Chơi toàn bị bẻ, thua ngược?</div>
+            <div class="text-xs text-slate-600 mt-1">Nghỉ 1 lúc cho bình tĩnh, xem cầu thêm trước khi đưa ra kết luận. Theo dõi lịch sử ✅/❌ trên web.</div>
+          </div>
+        </div>
+      </div>
+      <div class="border-2 border-rose-400 bg-rose-50 p-3 text-xs text-rose-700 font-semibold">
+        ⚠️ Không nên dính vào cờ bạc! Mọi kết quả dự đoán chỉ mang tính tham khảo, chơi lâu dài chắc chắn thua lỗ.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Note modal -->
+<div id="noteModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" onclick="if(event.target===this)closeNote()">
+  <div class="sharp-card w-full max-w-md bg-white p-5 relative pop-in">
+    <button type="button" onclick="closeNote()" class="absolute top-3 right-3 sharp-btn w-8 h-8 bg-rose-500 text-white text-sm font-black">✕</button>
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-12 h-12 bg-rose-500 border-2 border-slate-900 flex items-center justify-center text-white text-2xl font-black shadow-[3px_3px_0_#0f172a]">!</div>
+      <div class="inline-block px-3 py-1 bg-rose-500 text-white border-2 border-slate-900 font-mono font-black text-xs">⚠️ LƯU Ý</div>
+    </div>
+    <div class="text-sm text-slate-700 leading-relaxed space-y-3">
+      <p>Tất cả các công cụ trên website đều mang tính chất <b class="text-rose-600">giải trí</b>, không nên sử dụng cho mục đích kiếm tiền lâu dài hay đầu tư.</p>
+      <p><b class="text-rose-600">Không nên dính vào cờ bạc</b> — chơi lâu dài chỉ có thua, ảnh hưởng tài chính và cuộc sống.</p>
+      <p>Telegram hỗ trợ: <a href="https://t.me/SunNetWin" target="_blank" rel="noreferrer" class="text-sky-600 font-bold underline">@SunNetWin</a> — nếu có thắc mắc hãy hỏi.</p>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashView" class="hidden max-w-6xl mx-auto p-4 md:p-6 space-y-5">
+  <header class="sharp-card px-5 py-3.5 flex flex-wrap items-center justify-between gap-3 sticky top-2 z-30 glass-head card-live">
+    <div class="flex items-center gap-3">
+      <div class="bg-slate-900 text-amber-400 font-mono font-black px-3 py-2 text-xs tracking-wider shadow-[3px_3px_0_#f59e0b]">⚡ VIP</div>
+      <div>
+        <div class="font-black text-base tracking-tight">Tool tưng tửng</div>
+        <div class="text-[10px] font-mono text-slate-500" id="keyStatusLine">Key · --</div>
+      </div>
+    </div>
+    <div class="flex flex-wrap items-center gap-2">
+      <span id="connBadge" class="badge-live pulse-ring inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border-2 border-emerald-600 text-emerald-800 text-[10px] font-mono font-bold">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> LIVE
+      </span>
+      <span id="clockNow" class="font-mono text-[10px] font-bold px-2 py-1 border-2 border-slate-900 bg-white">--</span>
+      <button onclick="openTips()" class="sharp-btn px-2.5 py-1.5 bg-amber-300 text-[11px] font-mono font-bold">💡</button>
+      <button onclick="openNote()" class="sharp-btn px-2.5 py-1.5 bg-rose-500 text-white text-[11px] font-mono font-bold">⚠️</button>
+    </div>
+  </header>
+  <div id="dashDevBar" class="sharp-card px-3 py-2 info-bar text-slate-700 text-[11px] flex flex-wrap gap-x-4 gap-y-1 dev-bar fade-up">
+    <span>💻 <b id="dashDevName">--</b></span>
+    <span class="dev-chip">🌐 <b id="dashDevIp">--</b></span>
+    <span class="dev-chip">📱 <b id="dashLocalIp">--</b></span>
+    <span class="dev-chip">🆔 <b id="dashDevId">--</b></span>
+  </div>
+
+  <div id="gameTabs" class="game-tabs-grid gap-3"></div>
+  <p id="pickGameHint" class="text-center font-mono text-sm font-bold text-slate-600 sharp-card py-4 bg-amber-50">👆 Chọn 1 game bên trên để xem dự đoán</p>
+
+  <div id="gamePanels" class="hidden space-y-5 stagger">
+  <section class="sharp-card p-4 md:p-5">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div class="p-3 bg-slate-50 border-2 border-slate-900"><div class="text-[10px] font-mono text-slate-500 font-bold uppercase">📡 Phiên mới</div><div id="liveSession" class="font-mono font-black text-lg">#--</div></div>
+      <div class="p-3 bg-slate-50 border-2 border-slate-900"><div class="text-[10px] font-mono text-slate-500 font-bold uppercase">🎲 Xúc xắc</div><div id="liveDice" class="font-mono font-black text-lg text-amber-600">[--]</div></div>
+      <div class="p-3 bg-slate-50 border-2 border-slate-900"><div class="text-[10px] font-mono text-slate-500 font-bold uppercase">Σ Tổng</div><div id="liveSum" class="font-mono font-black text-lg">--</div></div>
+      <div class="p-3 bg-slate-50 border-2 border-slate-900"><div class="text-[10px] font-mono text-slate-500 font-bold uppercase">🏁 Kết quả</div><div id="liveResult" class="font-mono font-black text-lg text-indigo-600">---</div></div>
+    </div>
+  </section>
+
+  <section id="predCard" class="sharp-card p-5 md:p-6 border-l-8 border-l-sky-500 relative overflow-hidden card-live pred-hero">
+    <div id="calcOverlay" class="hidden absolute inset-0 bg-slate-950/92 z-30 flex items-center justify-center p-6 backdrop-blur-md"><div class="calc-grid"></div><div class="scanline"></div>
+      <div class="w-full max-w-sm bg-slate-900 border-2 border-sky-400 p-5 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-sky-500/20 to-transparent scanline pointer-events-none"></div>
+        <div class="flex justify-between font-mono text-xs font-black text-sky-400 mb-2"><span class="animate-pulse">► ENGINE TÍNH TOÁN...</span><span id="calcPct" class="text-amber-400">0%</span></div>
+        <div class="w-full h-4 bg-slate-950 border-2 border-sky-500/60 p-0.5"><div id="calcBar" class="h-full bg-gradient-to-r from-sky-500 via-indigo-500 to-amber-400 transition-all duration-75" style="width:0%"></div></div>
+        <div class="mt-2 text-[10px] font-mono text-emerald-400">> ensemble 16 models decoding...</div>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+      <div class="md:col-span-5 text-center p-6 border-4 border-slate-900 bg-white shadow-[4px_4px_0_#0f172a]">
+        <div class="text-xs font-mono font-bold uppercase tracking-widest text-slate-500 mb-1">🎯 Dự Đoán Phiên Tiếp</div>
+        <div id="predSession" class="text-xs font-mono font-bold text-sky-600 mb-2">PHIÊN #--</div>
+        <div id="predText" class="pred-hero-num text-slate-300">---</div>
+        <div id="confTag" class="inline-block mt-3 px-4 py-1.5 text-xs font-mono font-extrabold border-2 border-slate-900 uppercase bg-slate-100">Độ Tin Cậy: --%</div>
+        <div id="reasonText" class="mt-3 text-xs font-mono text-slate-600 italic font-semibold">Đang chờ engine...</div>
+      </div>
+      <div class="md:col-span-7 space-y-4">
+        <div><div class="flex justify-between text-sm font-bold mb-1"><span id="sideALabel" class="text-blue-700 font-mono">TÀI (T)</span><span id="taiPct" class="font-mono text-blue-700 font-black">--%</span></div><div class="w-full h-5 bg-slate-100 border-2 border-slate-900 overflow-hidden"><div id="taiBar" class="h-full bg-blue-600 progress-inner bar-fill" style="width:50%"></div></div></div>
+        <div><div class="flex justify-between text-sm font-bold mb-1"><span id="sideBLabel" class="text-rose-600 font-mono">XỈU (X)</span><span id="xiuPct" class="font-mono text-rose-600 font-black">--%</span></div><div class="w-full h-5 bg-slate-100 border-2 border-slate-900 overflow-hidden"><div id="xiuBar" class="h-full bg-rose-500 progress-inner bar-fill" style="width:50%"></div></div></div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div class="p-2 bg-slate-50 border-2 border-slate-900 text-center"><div class="text-[10px] font-mono text-slate-500 uppercase font-bold">Regime</div><div id="mRegime" class="font-mono font-black text-base">--</div></div>
+          <div class="p-2 bg-slate-50 border-2 border-slate-900 text-center"><div class="text-[10px] font-mono text-slate-500 uppercase font-bold">Trend</div><div id="mTrend" class="font-mono font-black text-base">--</div></div>
+          <div class="p-2 bg-slate-50 border-2 border-slate-900 text-center"><div class="text-[10px] font-mono text-slate-500 uppercase font-bold">Models</div><div id="mModels" class="font-mono font-black text-base">--</div></div>
+          <div class="p-2 bg-slate-50 border-2 border-slate-900 text-center"><div class="text-[10px] font-mono text-slate-500 uppercase font-bold">Độ CX</div><div id="mAcc" class="font-mono font-black text-base text-amber-600">--</div></div>
+        </div>
+        <button type="button" onclick="fetchPrediction(true)" class="sharp-btn w-full py-2.5 bg-sky-500 text-white text-sm font-bold">🔄 Làm mới dự đoán</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Accuracy history đúng/sai -->
+  <section class="sharp-card p-5">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-2 border-b-2 border-slate-900">
+      <h2 class="text-base font-bold uppercase tracking-tight">✅ Lịch Sử Đúng / Sai</h2>
+      <span id="accSummary" class="font-mono text-xs font-bold px-2.5 py-1 bg-slate-900 text-amber-400">--</span>
+    </div>
+    <div id="accList" class="space-y-1.5 max-h-56 overflow-y-auto pr-1 font-mono text-xs">
+      <div class="text-center py-4 text-slate-400">Đang tải...</div>
+    </div>
+  </section>
+
+  <!-- Session history -->
+  <section class="sharp-card p-5">
+    <div class="flex items-center justify-between mb-3 pb-2 border-b-2 border-slate-900">
+      <h2 class="text-base font-bold uppercase tracking-tight">📜 Lịch Sử Phiên</h2>
+      <span id="histCount" class="font-mono text-xs font-bold px-2.5 py-1 bg-slate-900 text-amber-400">-- phiên</span>
+    </div>
+    <div id="histList" class="space-y-1.5 max-h-72 overflow-y-auto pr-1 font-mono text-xs">
+      <div class="text-center py-4 text-slate-400">Đang tải lịch sử...</div>
+    </div>
+  </section>
+  </div><!-- /gamePanels -->
+
+  <footer class="text-center font-mono text-xs text-slate-500 py-3 space-y-1">
+    <div>© Tool tưng tửng · BẢN QUYỀN @SunNetWin · Key tự lưu 24h</div>
+    <div>🛟 Hỗ trợ: <a href="https://t.me/SunNetWin" target="_blank" rel="noreferrer" class="font-bold text-sky-600 underline">@SunNetWin</a></div>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const apiBase = String(window.VIP_CONFIG?.API_BASE || '').replace(/\/+$/,'');
+  const KEY_TTL = 24 * 60 * 60 * 1000; // 1 day
+  let token = null;
+  let currentGame = null; // chỉ set khi user bấm chọn game
+  let gamesList = [];
+  let refreshTimer = null;
+  let calcTimer = null;
+  let clockTimer = null;
+  const $ = id => document.getElementById(id);
+  const escHtml = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  window.openTips = () => { $('tipsModal').classList.remove('hidden'); localStorage.setItem('vip_last_tips', String(Date.now())); };
+  window.closeTips = () => $('tipsModal').classList.add('hidden');
+  window.openNote = () => { $('noteModal').classList.remove('hidden'); localStorage.setItem('vip_last_note', String(Date.now())); };
+  window.closeNote = () => $('noteModal').classList.add('hidden');
+
+  // Auto hiện Mẹo / Lưu ý mỗi 30 phút
+  const TIPS_INTERVAL = 30 * 60 * 1000;
+  function maybeAutoTipsNotes(force) {
+    const now = Date.now();
+    const last = Number(localStorage.getItem('vip_last_tips_note') || 0);
+    if (!force && now - last < TIPS_INTERVAL) return;
+    localStorage.setItem('vip_last_tips_note', String(now));
+    openNote();
+    setTimeout(() => {
+      closeNote();
+      setTimeout(() => openTips(), 400);
+    }, force ? 3200 : 4000);
+  }
+  setInterval(() => maybeAutoTipsNotes(false), 60 * 1000);
+
+  // Âm thanh mừng khi đoán đúng (Web Audio — không cần file)
+  function playWinSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const notes = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
+      notes.forEach((freq, i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'triangle';
+        o.frequency.value = freq;
+        g.gain.value = 0.0001;
+        o.connect(g); g.connect(ctx.destination);
+        const t0 = ctx.currentTime + i * 0.12;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.18, t0 + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.35);
+        o.start(t0); o.stop(t0 + 0.4);
+      });
+      // soft "clap" noise bursts
+      for (let c = 0; c < 3; c++) {
+        const bufferSize = ctx.sampleRate * 0.08;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+        const noise = ctx.createBufferSource();
+        const ng = ctx.createGain();
+        noise.buffer = buffer;
+        ng.gain.value = 0.12;
+        noise.connect(ng); ng.connect(ctx.destination);
+        noise.start(ctx.currentTime + 0.5 + c * 0.1);
+      }
+    } catch (e) { console.warn('audio', e); }
+  }
+
+  function celebrateCorrect(detail) {
+    const ov = $('celebrateOverlay');
+    if ($('celebDetail')) $('celebDetail').textContent = detail || 'Engine hit 🎯';
+    ov.classList.add('show');
+    playWinSound();
+    setTimeout(() => ov.classList.remove('show'), 2200);
+  }
+
+  let lastCelebratedSession = sessionStorage.getItem('vip_celeb_session') || '';
+
+  function deviceId(){
+    let id = localStorage.getItem('vip_device_id');
+    if (!id){ id = (crypto.randomUUID ? crypto.randomUUID() : 'd-'+Math.random().toString(36).slice(2)+Date.now().toString(36)); localStorage.setItem('vip_device_id', id); }
+    return id;
+  }
+
+  function saveSession(data){
+    const payload = {
+      token: data.token,
+      label: data.label || 'KEY VIP',
+      expiresAt: data.expiresAt || null,
+      savedAt: Date.now()
+    };
+    localStorage.setItem('vip_session', JSON.stringify(payload));
+    token = data.token;
+  }
+  function loadSession(){
+    try {
+      const raw = localStorage.getItem('vip_session');
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (!s.token || !s.savedAt || (Date.now() - s.savedAt) > KEY_TTL) {
+        localStorage.removeItem('vip_session');
+        return null;
+      }
+      return s;
+    } catch { return null; }
+  }
+  function clearSession(){
+    localStorage.removeItem('vip_session');
+    token = null;
+  }
+
+
+  // Boot screen
+  window.addEventListener('load', () => {
+    setTimeout(() => { const b = $('bootScreen'); if (b) b.classList.add('hide'); }, 700);
+  });
+  setTimeout(() => { const b = $('bootScreen'); if (b) b.classList.add('hide'); }, 2200);
+
+  function rippleAt(el, e) {
+    if (!el || !el.classList.contains('ripple')) return;
+    const r = el.getBoundingClientRect();
+    const wave = document.createElement('span');
+    wave.className = 'ripple-wave';
+    const size = Math.max(r.width, r.height);
+    wave.style.width = wave.style.height = size + 'px';
+    const x = (e && e.clientX != null) ? e.clientX - r.left - size/2 : r.width/2 - size/2;
+    const y = (e && e.clientY != null) ? e.clientY - r.top - size/2 : r.height/2 - size/2;
+    wave.style.left = x + 'px'; wave.style.top = y + 'px';
+    el.appendChild(wave);
+    setTimeout(() => wave.remove(), 600);
+  }
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.ripple, .sharp-btn');
+    if (btn) rippleAt(btn, e);
+  }, true);
+
+  function animateNumber(el, to, suffix) {
+    if (!el) return;
+    const from = parseInt(String(el.textContent).replace(/\D/g), 10) || 0;
+    const end = Math.round(Number(to) || 0);
+    const steps = 18;
+    let i = 0;
+    const timer = setInterval(() => {
+      i++;
+      const v = Math.round(from + (end - from) * (i / steps));
+      el.textContent = v + (suffix || '');
+      if (i >= steps) clearInterval(timer);
+    }, 20);
+  }
+
+  function showToast(title, msg){
+    $('toastTitle').textContent = title;
+    $('toastMsg').textContent = msg;
+    const el = $('toast');
+    el.classList.add('show');
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer = setTimeout(() => el.classList.remove('show'), 4500);
+  }
+
+  function tickClock(){
+    const now = new Date().toLocaleString('vi-VN', { hour12: false });
+    if ($('liveClock')) $('liveClock').textContent = '🕐 ' + now;
+    if ($('loginNow')) $('loginNow').textContent = '🕐 ' + now;
+    if ($('loginClock')) $('loginClock').textContent = now;
+    if ($('clockNow')) $('clockNow').textContent = '🕐 ' + now;
+  }
+
+
+  function buildWatermark(text) {
+    const wrap = $('wmWrap');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    const line = (text || 'Tool tưng tửng').trim() + '   ·   ';
+    const full = line.repeat(8);
+    for (let i = 0; i < 10; i++) {
+      const el = document.createElement('div');
+      el.className = 'wm-line';
+      el.textContent = full;
+      el.style.top = (i * 12 + 4) + '%';
+      el.style.left = '-10%';
+      el.style.width = '140%';
+      wrap.appendChild(el);
+    }
+  }
+
+  function initFloatSupport(url) {
+    const btn = $('floatSupport');
+    if (!btn) return;
+    if (url) btn.href = url;
+    let dragging = false, ox = 0, oy = 0, moved = false;
+    const pos = JSON.parse(localStorage.getItem('vip_float_pos') || 'null');
+    if (pos && pos.x != null) { btn.style.left = pos.x + 'px'; btn.style.top = pos.y + 'px'; btn.style.right = 'auto'; btn.style.bottom = 'auto'; }
+    const down = (e) => {
+      dragging = true; moved = false;
+      const p = e.touches ? e.touches[0] : e;
+      const r = btn.getBoundingClientRect();
+      ox = p.clientX - r.left; oy = p.clientY - r.top;
+      e.preventDefault();
+    };
+    const move = (e) => {
+      if (!dragging) return;
+      const p = e.touches ? e.touches[0] : e;
+      let x = p.clientX - ox, y = p.clientY - oy;
+      x = Math.max(8, Math.min(window.innerWidth - 64, x));
+      y = Math.max(8, Math.min(window.innerHeight - 64, y));
+      btn.style.left = x + 'px'; btn.style.top = y + 'px';
+      btn.style.right = 'auto'; btn.style.bottom = 'auto';
+      moved = true;
+    };
+    const up = () => {
+      if (!dragging) return;
+      dragging = false;
+      const r = btn.getBoundingClientRect();
+      localStorage.setItem('vip_float_pos', JSON.stringify({ x: r.left, y: r.top }));
+    };
+    btn.addEventListener('mousedown', down);
+    btn.addEventListener('touchstart', down, { passive: false });
+    window.addEventListener('mousemove', move);
+    window.addEventListener('touchmove', move, { passive: false });
+    window.addEventListener('mouseup', up);
+    window.addEventListener('touchend', up);
+    btn.addEventListener('click', (e) => { if (moved) { e.preventDefault(); moved = false; } });
+  }
+
+  function getLocalIp() {
+    return new Promise((resolve) => {
+      const done = (ip) => resolve(ip || '—');
+      try {
+        const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+        pc.createDataChannel('');
+        let found = null;
+        pc.onicecandidate = (e) => {
+          if (!e.candidate) { pc.close(); done(found); return; }
+          const m = e.candidate.candidate.match(/([0-9]{1,3}(\.[0-9]{1,3}){3})/);
+          if (m && !m[1].startsWith('0.')) { found = m[1]; }
+        };
+        pc.createOffer().then(o => pc.setLocalDescription(o)).catch(() => done(null));
+        setTimeout(() => { try { pc.close(); } catch {} done(found); }, 2000);
+      } catch { done(null); }
+    });
+  }
+
+  async function fillDeviceInfo() {
+    const name = /iPhone|iPad|iPod/.test(navigator.userAgent) ? 'iPhone'
+      : (/Android/.test(navigator.userAgent) ? 'Android' : 'Web');
+    const shortId = String(deviceId()).slice(0, 12);
+    const set = (id, v) => { if ($(id)) $(id).textContent = v; };
+    set('devName', name); set('dashDevName', name);
+    set('devIdShort', shortId); set('dashDevId', shortId);
+    set('devSlot', '0/3');
+    set('devKeyState', loadSession() ? 'Đã lưu key' : 'Chưa nhập');
+    try {
+      const r = await fetch('https://api.ipify.org?format=json');
+      const d = await r.json();
+      const net = d.ip || '—';
+      set('devIp', net); set('dashDevIp', net);
+    } catch {
+      set('devIp', '—'); set('dashDevIp', '—');
+    }
+    const local = await getLocalIp();
+    set('devLocalIp', local); set('dashLocalIp', local);
+  }
+
+  async function loadPublicConfig(){
+    try {
+      const r = await fetch(apiBase + '/api/public/config');
+      const d = await r.json();
+      if (d.telegramUrl && $('telegramCta')) $('telegramCta').href = d.telegramUrl;
+      const support = d.supportUrl || d.telegramUrl || 'https://t.me/SunNetWin';
+      initFloatSupport(support);
+      buildWatermark(d.watermarkText || (d.games || []).join(' · ') || 'Tool tưng tửng');
+      if (d.siteTitle) document.title = d.siteTitle + ' · @SunNetWin';
+    } catch(e){
+      buildWatermark('Tool tưng tửng');
+      initFloatSupport('https://t.me/SunNetWin');
+    }
+  }
+
+  function renderGameTabs(){
+    const root = $('gameTabs');
+    if (!gamesList.length){ root.innerHTML = '<div class="sharp-card p-4 text-center text-slate-500">Chưa có game.</div>'; return; }
+    const n = gamesList.length;
+    if (n === 1) root.style.gridTemplateColumns = '1fr';
+    else if (n === 2) root.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    else if (n === 3) root.style.gridTemplateColumns = 'repeat(3, 1fr)';
+    else root.style.gridTemplateColumns = 'repeat(auto-fit, minmax(140px, 1fr))';
+    root.innerHTML = gamesList.map(g =>
+      `<button type="button" onclick="switchGame('${g.id}')" class="sharp-btn py-3 px-2 text-xs md:text-sm font-bold uppercase tracking-wide ${g.id===currentGame?'tab-active':'tab-inactive'}">${escHtml(g.label)}</button>`
+    ).join('');
+  }
+
+  function showGamePanels(show){
+    const panels = $('gamePanels');
+    const hint = $('pickGameHint');
+    if (show) {
+      panels.classList.remove('hidden');
+      if (hint) hint.classList.add('hidden');
+    } else {
+      panels.classList.add('hidden');
+      if (hint) hint.classList.remove('hidden');
+    }
+  }
+
+  async function loadGames(){
+    const d = await apiGet('/api/games');
+    gamesList = d.games || [];
+    renderGameTabs();
+  }
+
+  function updateKeyStatus(){
+    const s = loadSession() || {};
+    const label = s.label || 'KEY VIP';
+    let line = '🔑 ' + label;
+    if (s.expiresAt) {
+      const d = new Date(Number(s.expiresAt));
+      line += ' · ⏳ ' + d.toLocaleString('vi-VN');
+    } else {
+      line += ' · ⏳ Không hết hạn';
+    }
+    if ($('keyStatusLine')) $('keyStatusLine').textContent = line;
+  }
+
+  function runLoginLoading(done){
+    const ov = $('loginLoading');
+    ov.classList.remove('hidden');
+    let p = 0;
+    const t = setInterval(() => {
+      p += 5;
+      $('loginBar').style.width = Math.min(p, 100) + '%';
+      $('loginPct').textContent = Math.min(p, 100) + '%';
+      if (p >= 100) {
+        clearInterval(t);
+        setTimeout(() => { ov.classList.add('hidden'); done && done(); }, 200);
+      }
+    }, 28);
+  }
+
+  window.doLogin = async function(){
+    const btn = $('loginBtn'), txt = $('loginBtnText'), err = $('loginError');
+    const key = $('keyInput').value.trim();
+    if (!key) { showErr('Vui lòng nhập mã key VIP'); return; }
+    btn.disabled = true; txt.innerHTML = '<span class="spinner"></span> ĐANG XÁC THỰC...';
+    err.classList.add('hidden');
+    try {
+      const r = await fetch(apiBase + '/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, deviceId: deviceId() })
+      });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || 'Lỗi kết nối');
+      saveSession({ token: d.token, label: d.label || 'KEY VIP', expiresAt: d.expiresAt || null });
+      runLoginLoading(() => {
+        $('loginView').classList.add('hidden');
+        $('dashView').classList.remove('hidden'); $('dashView').classList.add('dash-enter');
+        updateKeyStatus();
+        const exp = d.expiresAt ? new Date(d.expiresAt).toLocaleString('vi-VN') : 'Không hết hạn';
+        showToast('✅ Đăng nhập thành công', (d.label || 'KEY VIP') + ' · Hạn: ' + exp + ' · Chọn game để xem dự đoán');
+        startDashboard();
+        // Hiện Lưu ý + Mẹo ngay sau login
+        setTimeout(() => maybeAutoTipsNotes(true), 600);
+      });
+    } catch(e) {
+      showErr(e.message);
+      btn.classList.add('shake'); setTimeout(() => btn.classList.remove('shake'), 500);
+      btn.disabled = false; txt.textContent = 'Đăng nhập';
+    }
+  };
+
+  function showErr(msg){ const e=$('loginError'); e.textContent='! '+msg; e.classList.remove('hidden'); }
+
+  // Soft re-auth fail: clear session and show login (no logout button)
+  function forceRelogin(msg){
+    clearSession();
+    clearInterval(refreshTimer);
+    $('dashView').classList.add('hidden');
+    $('loginView').classList.remove('hidden');
+    if (msg) showErr(msg);
+  }
+
+  window.switchGame = function(g){
+    if (currentGame === g) {
+      // bấm lại game đang chọn → vẫn refresh
+      fetchPrediction(true);
+      return;
+    }
+    currentGame = g;
+    renderGameTabs();
+    showGamePanels(true);
+    clearInterval(refreshTimer);
+    fetchPrediction(true);
+    refreshTimer = setInterval(() => fetchPrediction(false), 8000);
+  };
+
+  async function apiGet(path){
+    const r = await fetch(apiBase + path, { headers: { 'Authorization': 'Bearer ' + token } });
+    if (r.status === 401) { forceRelogin('Phiên hết hạn, nhập lại key'); throw new Error('401'); }
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }
+
+  function runCalcAnim(cb){
+    const ov = $('calcOverlay'); ov.classList.remove('hidden');
+    let p = 0;
+    clearInterval(calcTimer);
+    calcTimer = setInterval(() => {
+      p += 4;
+      $('calcBar').style.width = Math.min(p, 100) + '%';
+      $('calcPct').textContent = Math.min(p, 100) + '%';
+      if (p >= 100) {
+        clearInterval(calcTimer);
+        setTimeout(() => { ov.classList.add('hidden'); Promise.resolve().then(() => cb && cb()).catch(e => console.warn(e)); }, 150);
+      }
+    }, 22);
+  }
+
+  window.fetchPrediction = async function(withAnim){
+    if (!token || !currentGame) return;
+    try {
+      const doRender = async () => {
+        const [pred, hist] = await Promise.all([
+          apiGet('/api/predict?game=' + encodeURIComponent(currentGame)),
+          apiGet('/api/history?game=' + encodeURIComponent(currentGame) + '&limit=30&accLimit=30')
+        ]);
+        renderPred(pred);
+        renderHistory(hist.history);
+        renderAccuracy(hist.accuracyHistory, hist.accuracy);
+        if (pred.feedError) {
+          $('connBadge').innerHTML = '<span class="w-2 h-2 rounded-full bg-rose-500"></span> API LỖI';
+          $('connBadge').className = 'inline-flex items-center gap-1.5 px-2.5 py-1 bg-rose-50 border border-rose-600 text-rose-800 text-xs font-mono font-bold';
+        } else {
+          $('connBadge').innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> LIVE';
+          $('connBadge').className = 'inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-600 text-emerald-800 text-xs font-mono font-bold';
+        }
+      };
+      if (withAnim) runCalcAnim(doRender); else await doRender();
+    } catch(e){ console.warn(e); }
+  };
+
+  function renderPred(p){
+    $('predSession').textContent = 'PHIÊN #' + (p.nextSession || '--');
+    const pr = String(p.predictedResult || '').toUpperCase();
+    const isBac = p.gameType === 'baccarat' || pr === 'BANKER' || pr === 'PLAYER' || pr === 'CAI' || pr === 'CON';
+    const isTai = pr === 'TÀI' || pr === 'TAI' || pr === 'BANKER' || pr === 'B' || pr === 'CAI';
+    const label = isBac
+      ? (isTai ? 'BANKER' : 'PLAYER')
+      : (isTai ? 'TÀI' : 'XỈU');
+    $('predText').textContent = label;
+    $('predText').className = 'pred-hero-num pred-flash ' + (isTai ? 'text-blue-700 pred-glow-tai' : 'text-rose-600 pred-glow-xiu');
+    if ($('sideALabel')) $('sideALabel').textContent = isBac ? 'BANKER (B)' : 'TÀI (T)';
+    if ($('sideBLabel')) $('sideBLabel').textContent = isBac ? 'PLAYER (P)' : 'XỈU (X)';
+    // restart bounce
+    void $('predText').offsetWidth;
+    $('predText').classList.add('pred-hero-num');
+    $('confTag').textContent = 'Độ Tin Cậy: 0%';
+    animateNumber($('confTag'), p.confidence, '%');
+    // fix label
+    setTimeout(() => { if ($('confTag')) $('confTag').textContent = 'Độ Tin Cậy: ' + p.confidence + '%'; }, 400);
+    $('confTag').className = 'conf-pill inline-block mt-3 px-4 py-1.5 text-xs font-mono font-extrabold border-2 border-slate-900 uppercase shimmer ' + (isTai?'bg-blue-100 text-blue-900':'bg-rose-100 text-rose-900');
+    if ($('taiBar')) { $('taiBar').classList.add('bar-glow'); $('xiuBar').classList.add('bar-glow'); }
+    if ($('predCard')) {
+      $('predCard').style.borderLeftColor = isTai ? '#1d4ed8' : '#e11d48';
+    }
+    $('reasonText').textContent = p.feedError ? ('API: ' + p.feedError) : ('Lý Do: ' + p.topReason);
+    $('taiPct').textContent = p.taiProb+'%'; $('xiuPct').textContent = p.xiuProb+'%';
+    $('taiBar').style.width = p.taiProb+'%'; $('xiuBar').style.width = p.xiuProb+'%';
+    $('mRegime').textContent = p.regime || '--';
+    $('mTrend').textContent = p.trend || '--';
+    $('mModels').textContent = p.activeModels;
+    $('mAcc').textContent = p.accuracy ? p.accuracy.pct+'%' : '--';
+    if (p.live){
+      $('liveSession').textContent = '#' + p.live.session;
+      $('liveDice').textContent = '[' + (p.live.dice||[]).join('-') + ']';
+      $('liveSum').textContent = p.live.sum + ' nút';
+      const lr = $('liveResult'); lr.textContent = p.live.char==='T'?'TÀI':'XỈU';
+      lr.className = 'font-mono font-black text-lg ' + (p.live.char==='T'?'text-blue-700':'text-rose-600');
+    }
+  }
+
+  function renderHistory(list){
+    $('histCount').textContent = (list?.length || 0) + ' phiên';
+    if (!list || !list.length){ $('histList').innerHTML = '<div class="text-center py-4 text-slate-400">Chưa có dữ liệu</div>'; return; }
+    $('histList').innerHTML = list.map(h => `
+      <div class="hist-row flex items-center justify-between py-1.5 px-2 hover:bg-amber-50">
+        <span class="font-bold text-slate-700">#${escHtml(h.session)}</span>
+        <span class="text-slate-500">[${escHtml((h.dice||[]).join('-'))}] = ${escHtml(h.sum)} nút</span>
+        <span class="font-black ${h.char==='T'?'text-blue-700':'text-rose-600'}">${h.char==='T'?'TÀI':'XỈU'}</span>
+      </div>`).join('');
+  }
+
+  function renderAccuracy(list, summary){
+    if (summary) {
+      $('accSummary').textContent = `✅ ${summary.correct}/${summary.total} · ${summary.pct}%`;
+    } else {
+      $('accSummary').textContent = '--';
+    }
+    if (!list || !list.length) {
+      $('accList').innerHTML = '<div class="text-center py-4 text-slate-400">Chưa có lịch sử dự đoán</div>';
+      return;
+    }
+    // Chỉ mừng khi có phiên đúng MỚI hơn lần đã lưu (tránh spam khi load lại)
+    const newest = list.find(a => a.isCorrect === true && !a.skipped);
+    if (newest) {
+      const sid = String(newest.session);
+      if (!lastCelebratedSession) {
+        // lần đầu load lịch sử — ghi nhận, không kêu
+        lastCelebratedSession = sid;
+        sessionStorage.setItem('vip_celeb_session', sid);
+      } else if (sid !== String(lastCelebratedSession)) {
+        lastCelebratedSession = sid;
+        sessionStorage.setItem('vip_celeb_session', sid);
+        const pred = newest.predicted === 'T' ? 'TÀI' : 'XỈU';
+        celebrateCorrect(`Phiên #${newest.session} · Đoán ${pred} ✓`);
+        showToast('✅ Dự đoán đúng!', `Phiên #${newest.session} · ${pred} · 👏`);
+      }
+    }
+    $('accList').innerHTML = list.map(a => {
+      const ok = a.isCorrect === true;
+      const skip = a.skipped || a.isCorrect === null;
+      const icon = skip ? '⏭️' : (ok ? '✅' : '❌');
+      const cls = skip ? 'text-slate-500' : (ok ? 'acc-correct font-bold' : 'acc-wrong');
+      const pred = a.predicted === 'T' || a.predicted === 'B' ? (a.predicted === 'B' ? 'BANKER' : 'TÀI') : (a.predicted === 'P' ? 'PLAYER' : 'XỈU');
+      const act = a.actual === 'T' ? 'TÀI' : a.actual === 'X' ? 'XỈU' : a.actual === 'B' ? 'BANKER' : a.actual === 'P' ? 'PLAYER' : '--';
+      return `<div class="hist-row flex items-center justify-between py-2 px-2 ${cls}">
+        <span class="font-black">${icon} #${escHtml(a.session)}</span>
+        <span>Đoán: <b>${pred}</b></span>
+        <span>Ra: <b>${act}</b>${ok ? ' <span class="text-emerald-600">✓</span>' : ''}</span>
+      </div>`;
+    }).join('');
+  }
+
+  async function startDashboard(){
+    try {
+      currentGame = null;
+      clearInterval(refreshTimer);
+      refreshTimer = null;
+      showGamePanels(false);
+      await loadGames();
+      updateKeyStatus();
+      if ($('devKeyState')) $('devKeyState').textContent = 'Đã đăng nhập';
+      fillDeviceInfo();
+      // không tự load dự đoán — chờ user bấm chọn game
+    } catch(e){ console.warn(e); }
+  }
+
+  // clocks
+  tickClock();
+  clockTimer = setInterval(tickClock, 1000);
+  loadPublicConfig();
+  fillDeviceInfo();
+
+  // Auto resume if key saved within 1 day
+  const saved = loadSession();
+  if (saved && saved.token) {
+    token = saved.token;
+    $('loginView').classList.add('hidden');
+    $('dashView').classList.remove('hidden'); $('dashView').classList.add('dash-enter');
+    updateKeyStatus();
+    startDashboard();
+  }
+
+  // Enter key to login
+  $('keyInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+})();
+</script>
+</body>
+</html>
